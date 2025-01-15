@@ -14,9 +14,9 @@ class Trainer():
         self.device = self.set_device(device_num)
         self.set_loss_fn()
         self.num_epochs = 100
-        self.learning_rate = 3e-5
+        self.learning_rate = 3e-5 #5e-5
         self.weight_decay = 1e-05
-        self.num_classes = 2
+        self.num_classes = 8
         self.alpha = 0.3
         self.beta = 0.3
         self.gamma = 0.3
@@ -25,7 +25,7 @@ class Trainer():
         self.save_dir = './checkpoints'
         self.best_acc = 0.
         self.scheduling = True
-        self.data_name = 'twitter'
+        self.data_name = 'EmoSet'
         self.loss_writer = SummaryWriter('logs/loss')
         self.acc_writer = SummaryWriter('logs/acc')
         self.patience = patience
@@ -37,20 +37,12 @@ class Trainer():
             os.makedirs(self.save_dir)
 
     def set_device(self, device_num):
-        # if torch.cuda.is_available(): 
-        #     print('There are %d GPU(s) available.' % torch.cuda.device_count())
-        #     print('We will use the GPU: %d' % device_num)
-        #     return torch.device("cuda:%d" % device_num)
-        # else: 
-        #     print('No GPU available, using the CPU instead.')
-        #     return torch.device("cpu")
-        if torch.backends.mps.is_available():
-            mps_device = torch.device("mps")
-            x = torch.ones(1, device=mps_device)
-            print (x)
-            return torch.device("mps")
-        else:
-            print ("MPS device not found.")
+        if torch.cuda.is_available(): 
+            print('There are %d GPU(s) available.' % torch.cuda.device_count())
+            print('We will use the GPU: %d' % device_num)
+            return torch.device("cuda:%d" % device_num)
+        else: 
+            print('No GPU available, using the CPU instead.')
             return torch.device("cpu")
     
     def get_params(self, model, feature_extract=False):
@@ -263,7 +255,7 @@ class Trainer():
             # save model
             if val_acc > self.best_acc:
                 self.best_acc = val_acc
-                self.save_checkpoint(model, it + 1)  # 에폭 번호를 인자로 전달
+                self.save_checkpoint(model, it + 1)
                 self.counter = 0
             else:
                 self.counter += 1
@@ -276,7 +268,7 @@ class Trainer():
                 break  # early stopping
                 
             # save model
-            #self.save_checkpoint(model, val_acc)  # 수정된 부분
+            #self.save_checkpoint(model, val_acc)
                 
         print('-' * 10)
         print('End Training at Epoch %d!' % self.num_epochs)
@@ -294,10 +286,10 @@ if __name__ == '__main__':
     BATCH_SIZE = train_config['DATALOADER']['batch_size']
     
     GPU_NUM = train_config['GPU_NUM']
-    CHECKPOINT_PATH = 'checkpoints/EmoSet-2_object5_epoch6_acc0.93.pt'
+    CHECKPOINT_PATH = 'checkpoints/EmoSet_object_epoch13_acc0.78.pt'
     
-    #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    #os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "%d" % GPU_NUM
     
     trainer = Trainer(GPU_NUM)
     #trainer = Trainer(GPU_NUM, checkpoint_path=CHECKPOINT_PATH)
