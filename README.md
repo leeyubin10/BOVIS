@@ -7,6 +7,12 @@ In order to capture subtle relationships between visual and semantic features an
 
 Extensive evaluations on multiple benchmark datasets validate the effectiveness of the BOVIS framework in advancing visual emotion analysis. The results demonstrate that the synergy between object-specific features and holistic visual representations enhances the accuracy and interpretability of emotion analysis, while the bias mitigation optimization improves fairness and increases reliability.
 
+## Model Architecture
+
+![Model Architecture](model_structure.png)
+
+The above image represents the architecture of **BOVIS**, showcasing how the framework integrates visual features, object-level semantics, and bias mitigation strategies.
+
 ## Key Features
 - **BOVIS** leverages **pre-trained models** to extract comprehensive image features, integrate object-level semantics, and enhance emotional context understanding.
 - It incorporates a **Bias Mitigation** strategy to address dataset imbalances, improving fairness and reliability in emotion prediction.
