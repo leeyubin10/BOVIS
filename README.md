@@ -18,6 +18,7 @@ git clone https://github.com/leeyubin10/BOVIS.git
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
 ## Dataset Setup
 
@@ -35,4 +36,5 @@ After setting up the dataset and object detection folder, you can proceed to tra
 ```bash
 # Train the model
 python train.py
+```
 
