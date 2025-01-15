@@ -1,6 +1,6 @@
 DATALOADER:
   batch_size: 10
-  data_name: twitter
+  data_name: EmoSet
   dir_path: ../data
   
 GPU_NUM: 0
