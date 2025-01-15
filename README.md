@@ -7,7 +7,7 @@ In order to capture subtle relationships between visual and semantic features an
 
 Extensive evaluations on multiple benchmark datasets validate the effectiveness of the BOVIS framework in advancing visual emotion analysis. The results demonstrate that the synergy between object-specific features and holistic visual representations enhances the accuracy and interpretability of emotion analysis, while the bias mitigation optimization improves fairness and increases reliability.
 
-## Model Architecture
+## Overall Framework
 
 ![Model Architecture](BOVIS_Framework.png)
 
@@ -18,3 +18,21 @@ git clone https://github.com/leeyubin10/BOVIS.git
 
 # Install dependencies
 pip install -r requirements.txt
+
+## Dataset Setup
+
+### Download the Dataset
+Download the dataset and split it into **train**, **validation**, and **test** sets.
+
+### Setup the Object Detection Folder
+The object detection functionality in **BOVIS** uses a pre-trained **Faster R-CNN** model, which is pretrained on the **Visual Genome** dataset.  
+Set up the `object_detection` folder as described in the instructions of the repository [Faster-R-CNN-with-model-pretrained-on-Visual-Genome]([https://github.com/your-repository-link](https://github.com/shilrley6/Faster-R-CNN-with-model-pretrained-on-Visual-Genome.git)) to ensure compatibility with this framework.
+
+## Training the Model
+
+After setting up the dataset and object detection folder, you can proceed to train the model using the configuration specified in the `config/train_config.yaml` file.
+
+```bash
+# Train the model
+python train.py
+
