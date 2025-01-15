@@ -19,10 +19,8 @@ class EmoLoss(torch.nn.Module):
     
     def _get_min_dist(self, pred, true):
         dist1 = torch.abs(pred - true)
-        dist2 = torch.abs(pred + 2 - true)
-        dist3 = torch.abs(true + 2 - pred)
-        #dist2 = torch.abs(pred + 6 - true)
-        #dist3 = torch.abs(true + 6 - pred)
+        dist2 = torch.abs(pred + 8 - true)
+        dist3 = torch.abs(true + 8 - pred)
         
         total_dist = torch.stack((dist1, dist2, dist3))
         min_dist = torch.min(total_dist, dim=0)[0].float()
