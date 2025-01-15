@@ -27,7 +27,7 @@ Download the dataset and split it into **train**, **validation**, and **test** s
 
 ### Setup the Object Detection Folder
 The object detection functionality in **BOVIS** uses a pre-trained **Faster R-CNN** model, which is pretrained on the **Visual Genome** dataset.  
-Set up the `object_detection` folder as described in the instructions of the repository [Faster-R-CNN-with-model-pretrained-on-Visual-Genome]([https://github.com/your-repository-link](https://github.com/shilrley6/Faster-R-CNN-with-model-pretrained-on-Visual-Genome.git)) to ensure compatibility with this framework.
+Set up the `object_detection` folder as described in the instructions of the repository [Faster-R-CNN-with-model-pretrained-on-Visual-Genome](https://github.com/shilrley6/Faster-R-CNN-with-model-pretrained-on-Visual-Genome.git) to ensure compatibility with this framework.
 
 ## Training the Model
 
