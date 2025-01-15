@@ -9,7 +9,7 @@ Extensive evaluations on multiple benchmark datasets validate the effectiveness 
 
 ## Model Architecture
 
-![Model Architecture](architecture.png)
+![Model Architecture](BOVIS_Framework.png)
 
 The above image represents the architecture of **BOVIS**, showcasing how the framework integrates visual features, object-level semantics, and bias mitigation strategies.
 
