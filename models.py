@@ -18,9 +18,7 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
-# GPU 사용 가능 여부 확인 및 device 설정
-device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class SelfAttention(nn.Module): 
     def __init__(self, glove_dim=300): 
@@ -64,7 +62,7 @@ class ObjectAttention(nn.Module):
         return new_ftr, weights
 
 class LocalBranch:   
-    def __init__(self, k=10, glove_path='/Users/yubeen/Desktop/dxlab/개인연구/VSA/OSANet/EmojiGenerator/example/emoji-gan/utils/glove.6B.300d.txt'):
+    def __init__(self, k=10, glove_path='./EmojiGenerator/example/emoji-gan/utils/glove.6B.300d.txt'):
         self.k = k 
         self.glove_dim = 300 
         self.glove = self.load_glove(glove_path, self.glove_dim) 
@@ -74,7 +72,7 @@ class LocalBranch:
         if embedding_dim is None:
             embedding_dim = 300
 
-        glove_file_path = '/Users/yubeen/Desktop/dxlab/개인연구/VSA/OSANet/EmojiGenerator/example/emoji-gan/utils/glove.6B.300d.txt'
+        glove_file_path = './EmojiGenerator/example/emoji-gan/utils/glove.6B.300d.txt'
         _word2em = {}
         file = open(glove_file_path, mode='rt', encoding='utf8')
         for line in tqdm(file):
@@ -221,10 +219,10 @@ class OSANet(nn.Module):
             b_combined = b_combined.squeeze(1)
 
             output = self.linear_3(b_combined)
-            output = output.mean(dim=1)  # 평균을 내어 shape을 [10, 8]로 만듭니다.
+            output = output.mean(dim=1)
             h += output
 
             #h += self.linear_3(b_combined) 
 
         h = self.dropout(h)  
-        return h, weight_list  #, b_list
+        return h, weight_list
