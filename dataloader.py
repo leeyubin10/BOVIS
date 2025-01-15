@@ -24,7 +24,7 @@ class dataset(Dataset):
                             self.file_list.append(i)
                             self.path_list.append(img_path)
                             
-        if data_name == 'EmoSet' or data_name == 'FI' or data_name == 'FI-2' or data_name == 'flickr' or data_name == 'instagram' or data_name == 'Emotion6' or data_name == 'twitter':
+        if data_name == 'EmoSet' or data_name == 'EmoSet-2' or data_name == 'FI' or data_name == 'FI-2' or data_name == 'flickr' or data_name == 'instagram':
             self.name_list = [int(i.split('_')[-1].split('.')[0]) if i.split('_')[-1].split('.')[0].isdigit() else -1 for i in self.file_list]
             
         all_labels = ['train', 'test', 'val'] + [i.split('/')[-2] for i in self.path_list]
@@ -34,10 +34,6 @@ class dataset(Dataset):
         self.pos_emotion = ['amusement', 'contentment', 'awe', 'excitement']
         self.neg_emotion = ['anger', 'disgust', 'fear', 'sadness']
 
-        #self.pos_emotion = ['joy', 'surprise']
-        #self.neg_emotion = ['anger', 'disgust', 'fear', 'sadness']
-        
-        #input_size = 448
         input_size = 224
         self.transforms = {
             'train': transforms.Compose([
