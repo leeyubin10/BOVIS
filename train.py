@@ -171,7 +171,7 @@ class Trainer():
     def evaluate(self, model, branch, branch_add, dataloader):
         loss, preds, labels = self.predict(model, branch, branch_add, dataloader)
         acc = self.compute_acc(preds, labels)
-        return loss, acc  #, preds, labels  # test용
+        return loss, acc  #, preds, labels
 
     def load_checkpoint(self, model, checkpoint_path):
         """
@@ -272,7 +272,7 @@ class Trainer():
                 
         print('-' * 10)
         print('End Training at Epoch %d!' % self.num_epochs)
-        test_loss, test_acc = self.evaluate(model, branch, branch_add, test_data_loader)  # 수정된 부분
+        test_loss, test_acc = self.evaluate(model, branch, branch_add, test_data_loader)
         print(f'Test   loss {test_loss}   Test acc {test_acc}')
 
 if __name__ == '__main__': 
