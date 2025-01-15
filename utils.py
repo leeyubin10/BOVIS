@@ -8,8 +8,6 @@ class EmoLoss(torch.nn.Module):
         super(EmoLoss, self).__init__()
         self.idx_to_emo = {0:'amusement', 1:'anger', 2:'awe', 3:'contentment', 4:'disgust', 5:'excitement', 6:'fear', 7:'sadness'}
         self.emo_to_idx_loss = {'fear':0, 'excitement':1, 'awe':2, 'contentment':3, 'amusement':4, 'anger':5, 'disgust':6, 'sadness':7}
-        #self.idx_to_emo = { 0: 'anger', 1: 'disgust', 2: 'fear', 3: 'joy', 4: 'sadness', 5: 'surprise' }
-        #self.emo_to_idx_loss = {'fear':0, 'surprise':1, 'joy':2, 'anger':3, 'disgust':4, 'sadness':5}
 
     def _convert_to_new_idx(self, input_list):
         '''Convert to new index which indicates the position in Mikel's Wheel'''
