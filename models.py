@@ -39,26 +39,38 @@ class SelfAttention(nn.Module):
         new_ftr = torch.mul(weights, values) 
         new_ftr = new_ftr.sum(1) 
         return new_ftr, weights 
-
+    
 class ObjectAttention(nn.Module):
-    def __init__(self, feature_dim=768):  # feature_dim: ViT feature dimension
+    def __init__(self, feature_dim=768):
         super().__init__()
-        self.W_1 = nn.Linear(feature_dim, feature_dim).to(device)  # Weights for features
-        self.W_2 = nn.Linear(feature_dim, 1).to(device)  # Weights for scoring
+        self.W_1 = nn.Linear(feature_dim, feature_dim).to(device) 
+        self.W_2 = nn.Linear(feature_dim, 1).to(device) 
         
     def _get_weights(self, values):
-        z = self.W_2(self.W_1(values))  # Linear transformations
-        weights = nn.functional.softmax(z, dim=1)  # Softmax to get attention weights
+        """
+        Args:
+            values: shape [batch_size, seq_len, feature_dim]
+        Returns:
+            weights: shape [batch_size, seq_len, 1]
+        """
+        transformed = self.W_1(values)  # [batch_size, seq_len, feature_dim]
+        scores = self.W_2(transformed)  # [batch_size, seq_len, 1]
+        weights = nn.functional.softmax(scores, dim=1)  # [batch_size, seq_len, 1]
         return weights
 
     def forward(self, values):
+        """
+        Args:
+            values: shape [batch_size, seq_len, feature_dim]
+        Returns:
+            new_ftr: shape [batch_size, feature_dim]
+            weights: shape [batch_size, seq_len, 1]
+        """
         values = values.to(device)
-        # Select only the first 10 objects (or fewer if there are less than 10)
-        if values.size(1) > 10:
-            values = values[:, :10, :]  # Get the first 10 objects
-        weights = self._get_weights(values)
-        new_ftr = torch.mul(weights.unsqueeze(-1), values)  # Apply weights
-        new_ftr = new_ftr.sum(1)  # Aggregate features
+        batch_size, seq_len, feature_dim = values.shape
+        weights = self._get_weights(values)  # [batch_size, seq_len, 1]
+        weighted_values = values * weights  # [batch_size, seq_len, feature_dim]
+        new_ftr = weighted_values.sum(dim=1)  # [batch_size, feature_dim]
         return new_ftr, weights
 
 class LocalBranch:   
@@ -162,12 +174,12 @@ class ObjectBranch:
             object_features_tensor = mean_tensor.repeat(target_length, 1, 1) 
             
             return object_features_tensor
-    
+        
 class OSANet(nn.Module):
     def __init__(self, num_classes, use_pretrained=True):
         super(OSANet, self).__init__()
         self.num_classes = num_classes
-        feature_dim = 768 
+        feature_dim = 768
         glove_dim = 300
         
         self.image_processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224-in21k')
@@ -175,16 +187,17 @@ class OSANet(nn.Module):
         self.vit = self.vit.to(device)
 
         self.att_list = nn.ModuleList([SelfAttention() for _ in range(self.num_classes)])
-        self.obj_att_list = nn.ModuleList([ObjectAttention(feature_dim) for _ in range(self.num_classes)])  # Object attention layers
+        self.obj_att_list = nn.ModuleList([ObjectAttention(feature_dim) for _ in range(self.num_classes)])
         self.lin_list = nn.ModuleList([nn.Linear(glove_dim, 1) for _ in range(self.num_classes)])
+        
         self.k = 10
         self.dropout = nn.Dropout(p=0.5)
         self.linear_1 = nn.Linear(feature_dim, glove_dim).to(device)
         self.linear_2 = nn.Linear(glove_dim, 1).to(device)
-        self.linear_3 = nn.Linear(1 + glove_dim, self.num_classes).to(device)
+        self.linear_3 = nn.Linear(glove_dim + feature_dim, self.num_classes).to(device)
 
     def forward(self, img, obj, obj_add):
-        # img: (batch, 3, 224, 224)  
+        # img: (batch, 3, 224, 224)
         # obj: (batch, 10, 300)
         # obj_add: (batch, 197, 768)
         
@@ -192,37 +205,31 @@ class OSANet(nn.Module):
         obj = obj.to(device)
         obj_add = obj_add.to(device)
         
-        # 1) Global branch
-        g = self.vit(img)['last_hidden_state']  
+        batch_size = img.size(0)
         
-        # 2) Semantic branch
-        g_prime = self.linear_1(g[:, 0, :])  # ([10, 300])
-        g_prime = g_prime.unsqueeze(1)  # ([10, 1, 300])
-
-        g_prime = g_prime.repeat(1, 10, 1)  # Repeat along the second dimension
-        
-        obj_prime = self.linear_1(obj_add[:, 0, :])  # ([10, 300])
-        obj_prime = obj_prime.unsqueeze(1)  # ([10, 1, 300])
+        # Global branch
+        g = self.vit(img)['last_hidden_state']  # [batch_size, 197, 768]
+        g_cls = g[:, 0, :]  # [batch_size, 768]
+        g_prime = self.linear_1(g_cls)  # [batch_size, 300]
         
         weight_list = []
         b_list = []
-        h = torch.zeros(img.size(0), self.num_classes).to(img.device) 
+        h = torch.zeros(batch_size, self.num_classes).to(device)
 
-        for idx in range(self.num_classes):  
-            _, weights = self.att_list[idx](obj)  
+        for idx in range(self.num_classes):
+            # Semantic branch
+            _, weights = self.att_list[idx](obj)  # obj: [batch_size, 10, 300]
             weight_list.append(weights)
-
-            _, b = self.obj_att_list[idx](obj_add)  
-            b_list.append(b)
-
-            b_combined = torch.cat((b, g_prime), dim=-1)  
-            b_combined = b_combined.squeeze(1)
-
-            output = self.linear_3(b_combined)
-            output = output.mean(dim=1)
+            
+            # Object branch
+            b, b_weights = self.obj_att_list[idx](obj_add)  # b: [batch_size, 768]
+            b_list.append(b_weights)
+            
+            # 여기서 g_prime은 [batch_size, 300]이고 b는 [batch_size, 768]
+            combined_features = torch.cat([b, g_prime], dim=1)  # [batch_size, 768+300]
+            
+            output = self.linear_3(combined_features)
             h += output
 
-            #h += self.linear_3(b_combined) 
-
-        h = self.dropout(h)  
+        h = self.dropout(h)
         return h, weight_list
