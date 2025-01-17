@@ -298,8 +298,8 @@ class PretrainedFasterRCNN():
 
     
     def detect_boxes(self, img):  
-        self.MIN_BOXES = 20
-        self.MAX_BOXES = 20
+        self.MIN_BOXES = 3
+        self.MAX_BOXES = 3
         self._initialize()
         start = time.time()
         max_per_image = 100
