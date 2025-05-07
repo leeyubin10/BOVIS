@@ -194,7 +194,7 @@ class OSANet(nn.Module):
         self.dropout = nn.Dropout(p=0.5)
         self.linear_1 = nn.Linear(feature_dim, glove_dim).to(device)
         self.linear_2 = nn.Linear(glove_dim, 1).to(device)
-        self.linear_3 = nn.Linear(glove_dim + feature_dim, self.num_classes).to(device)
+        self.linear_3 = nn.Linear(glove_dim + feature_dim + glove_dim, self.num_classes).to(device)
 
     def forward(self, img, obj, obj_add):
         # img: (batch, 3, 224, 224)
@@ -218,7 +218,7 @@ class OSANet(nn.Module):
 
         for idx in range(self.num_classes):
             # Semantic branch
-            _, weights = self.att_list[idx](obj)  # obj: [batch_size, 10, 300]
+            semantic_feature, weights = self.att_list[idx](obj)  # obj: [batch_size, 10, 300]
             weight_list.append(weights)
             
             # Object branch
@@ -226,7 +226,7 @@ class OSANet(nn.Module):
             b_list.append(b_weights)
             
             # 여기서 g_prime은 [batch_size, 300]이고 b는 [batch_size, 768]
-            combined_features = torch.cat([b, g_prime], dim=1)  # [batch_size, 768+300]
+            combined_features = torch.cat([b, g_prime, semantic_feature], dim=1)  # [batch_size, 768 + 300 + 300]
             
             output = self.linear_3(combined_features)
             h += output
