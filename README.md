@@ -1,4 +1,4 @@
-# BOVIS: Bias-Mitigated Object-Enhanced Visual Emotion Analysis
+# BOVIS: Bias-Mitigated Object-Enhanced Visual Emotion Analysis (CIKM'25)
 
 ## Abstract
 Visual emotion analysis is a promising field that aims to predict emotional responses elicited by visual stimuli. While recent advances in deep learning have significantly improved emotion detection capabilities, existing methods often fall short due to their exclusive focus on either holistic visual features or semantic content, thereby neglecting their interplay. To address this limitation, we introduce BOVIS, a Bias-Mitigated Object-Enhanced Visual Emotion Analysis framework.
