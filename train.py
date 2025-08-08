@@ -66,7 +66,7 @@ class Trainer():
         self.ipw_mae_loss_fn = IPWEnhancedMAELoss()
 
     def build_model(self):
-        model = OSANet(self.num_classes).to(self.device)
+        model = BOVIS(self.num_classes).to(self.device)
         localbranch = LocalBranch() 
         objectbranch = ObjectBranch()
         return model, localbranch, objectbranch
