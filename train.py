@@ -5,7 +5,7 @@ import torch.nn as nn
 import argparse
 import os
 from utils import EmoLoss, load_yaml, GMAELoss, compute_bias_weight, IPWEnhancedMAELoss
-from models import OSANet, LocalBranch, ObjectBranch
+from models import BOVIS, LocalBranch, ObjectBranch
 from tqdm import tqdm
 from dataloader import load_dataloader, get_label_encoder
 
