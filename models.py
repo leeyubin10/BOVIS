@@ -175,9 +175,9 @@ class ObjectBranch:
             
             return object_features_tensor
         
-class OSANet(nn.Module):
+class BOVIS(nn.Module):
     def __init__(self, num_classes, use_pretrained=True):
-        super(OSANet, self).__init__()
+        super(BOVIS, self).__init__()
         self.num_classes = num_classes
         feature_dim = 768
         glove_dim = 300
